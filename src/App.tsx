@@ -2,6 +2,7 @@ import './App.css';
 import {pokemonMachine} from './state/state';
 import {useMachine} from '@xstate/react';
 import {Pokemon} from "./components/pokemon/pokemon";
+import {PokemonSaverSideBar} from "./components/pokemonSaverSidebar/pokemonSaverSideBar";
 
 
 const pokemonList = ['charizard', 'ditto']
@@ -10,7 +11,7 @@ function App() {
     const [current, send] = useMachine(pokemonMachine);
 
     // @ts-ignore
-    let {pokemon} = current.context;
+    let {pokemon, pokemonSaverSideBar} = current.context;
 
     console.log("state", current.context);
 
@@ -26,8 +27,8 @@ function App() {
                 })}
             </select>
 
-            { pokemon && <Pokemon actor={pokemon} />}
-
+            {pokemon && <Pokemon actor={pokemon}/>}
+            <PokemonSaverSideBar actor={pokemonSaverSideBar}/>
 
         </div>
     );
