@@ -1,7 +1,7 @@
 import './App.css';
 import {pokemonMachine} from './state/state';
 import {useMachine} from '@xstate/react';
-import {KnownPokemon} from "./components/pokemon/pokemon";
+import {KnownPokemon} from "./components/knownPokemon/knownPokemon";
 import {PokemonSaverSideBar} from "./components/pokemonSaverSidebar/pokemonSaverSideBar";
 import {UnknownPokemon} from "./components/unknownPokemon/unkownPokemon";
 

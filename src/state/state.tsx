@@ -130,7 +130,7 @@ export const createPokemonMachine = (pokemon: string, pokemonSaverSideBar: any) 
 
 
 
-    type pokemonCardActorMachineContextType = {pokemon:string, pokemonData?: Pokemon,pokemonSaverSideBar:any };
+    type pokemonCardActorMachineContextType = {pokemon:string, pokemonData?: any,pokemonSaverSideBar:any };
     type pokemonCardActorMachineEventType = { type: 'REFRESH' }|{ type: 'SAVE' ;pokemonName:string }|{type:'RETRY'};
 
     return createMachine<pokemonCardActorMachineContextType,pokemonCardActorMachineEventType>({
@@ -144,13 +144,18 @@ export const createPokemonMachine = (pokemon: string, pokemonSaverSideBar: any) 
         states: {
             loading: {
                 invoke: {
-                    id: 'fetch-pokemon',
+                    id: 'fetch-knownPokemon',
                     src: invokeFetchPokemon,
                     onDone: {
                         target: 'loaded',
                         actions: [
                             assign({
-                                pokemonData: (_, event) => event.data,
+
+                                pokemonData: (_, event) => {
+
+                                    console.log("event",event.data);
+                                return event.data
+                                },
                             }),
 
                         ],

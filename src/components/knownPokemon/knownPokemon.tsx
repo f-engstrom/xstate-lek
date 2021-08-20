@@ -6,15 +6,18 @@ export const KnownPokemon = ({actor}: { actor: any }) => {
 
 
 
-    const [current, send] = useActor<any,any>(actor);
+    const [current, send] = useActor(actor);
 
 
 
-    const pokemon:Pokemon = current.context?.data;
+    // @ts-ignore
+    const pokemon:Pokemon = current.context?.pokemonData;
     const image = pokemon?.sprites?.front_default;
     const name = pokemon?.name;
     const abilities = pokemon?.abilities;
+    // @ts-ignore
 
+    console.log("context",current.context)
 
 
 

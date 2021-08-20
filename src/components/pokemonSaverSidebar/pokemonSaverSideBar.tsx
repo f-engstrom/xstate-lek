@@ -6,7 +6,10 @@ export const PokemonSaverSideBar = ({actor}: { actor: any }) => {
     const [current, send] = useActor(actor);
 
 
-    let pokemonList = <ul>{current.context.pokemons.map((pokemon:string) => {
+    let pokemonList = <ul>{
+
+        // @ts-ignore
+        current.context.pokemons.map((pokemon:string) => {
 
 
         return (
