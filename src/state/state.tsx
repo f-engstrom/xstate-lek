@@ -1,14 +1,21 @@
 import {assign, createMachine, send, sendParent, spawn} from 'xstate';
+import {Pokemon} from "../models/pokemon";
 
-interface pokemonSelectEvent {
-
-    type: string,
-    name: string
-
+interface Obj {
+    [key: string]: any;
 }
 
-// @ts-ignore
-export const pokemonMachine = createMachine({
+type PokemonMachineEventType = { type: 'SELECT' ;name:string };
+type PokemonMachineContextType = { pokemons: Obj,pokemon:any,pokemonSaverSideBar:any };
+interface PokemonMachineStateType {
+    states: {
+        init: {};
+        idle: {};
+        selected: {};
+    };
+}
+
+export const pokemonMachine = createMachine<PokemonMachineContextType,PokemonMachineEventType>({
         id: 'pokemon',
         initial: 'init',
         context: {
@@ -20,42 +27,36 @@ export const pokemonMachine = createMachine({
         states: {
 
             init: {
-                entry: assign((context,event)=>{
+                entry: assign((context, event) => {
 
                     let pokemonSaverSideBar = spawn(pokemonSaverSideBarMachine, 'pokemonSaverSideBar');
 
                     console.log("entry");
-                    // @ts-ignore
-                    return {...context,pokemonSaverSideBar};
+                    return {...context, pokemonSaverSideBar};
 
-                }), always:{target:'idle'}
+                }), always: {target: 'idle'}
                 ,
             },
             idle: {},
             selected: {}
         },
-    // @ts-ignore
-    on: {
+        on: {
             SELECT: {
                 target: '.selected',
-                actions: assign((context, event: pokemonSelectEvent) => {
+                actions: assign((context, event) => {
 
-                    console.log("eveeent",event);
+                    console.log("eveeent", event);
 
-                    // @ts-ignore
                     let pokemon = context.pokemons[event.name];
 
                     if (pokemon) {
-                        // @ts-ignore
                         return {...context, pokemon};
 
                     }
 
-                    // @ts-ignore
-                    pokemon = spawn(createPokemonMachine(event.name,context.pokemonSaverSideBar));
+                    pokemon = spawn(createPokemonMachine(event.name, context.pokemonSaverSideBar));
 
                     return {
-                        // @ts-ignore
                         pokemons: {...context.pokemons, [event.name]: pokemon},
                         pokemon
                     }
@@ -67,56 +68,55 @@ export const pokemonMachine = createMachine({
 )
 
 
-export const pokemonSaverSideBarMachine = createMachine({
+type pokemonSaverSideBarMachineContextType = { pokemons: string[] };
+type pokemonSaverSideBarMachineEventType = { type: 'SAVE' ;pokemonName:string }|{ type: 'SELECT' ;pokemonName:string };
 
-    id:'pokemonSaverSideBar',
+
+export const pokemonSaverSideBarMachine = createMachine<pokemonSaverSideBarMachineContextType,pokemonSaverSideBarMachineEventType>({
+
+    id: 'pokemonSaverSideBar',
     initial: 'empty',
-    context:{
-        pokemons:[]
+    context: {
+        pokemons: []
     },
 
-    states:{
-        empty:{},
-        clicked:{
-
-        }
+    states: {
+        empty: {},
+        clicked: {}
     },
-    // @ts-ignore
 
-    on:{
-        SAVE:{
-            target:'clicked',
-            actions: assign( (context:any,event:any) => {
-
-
-                let pokemons =[...context.pokemons];
-
-                let pokemon = pokemons.indexOf(event.pokemon);
+    on: {
+        SAVE: {
+            target: 'clicked',
+            actions: assign((context, event) => {
 
 
-                if(pokemon != -1){
+                let pokemons = [...context.pokemons];
+
+                let pokemon = pokemons.indexOf(event.pokemonName);
+
+
+                if (pokemon != -1) {
 
                     return {...context};
                 }
 
-                pokemons.push(event.pokemon);
+                pokemons.push(event.pokemonName);
 
 
-                return{
-                    ...context,pokemons:pokemons
+                return {
+                    ...context, pokemons: pokemons
                 }
 
 
             })
         },
-        SELECT:{
+        SELECT: {
 
             actions: sendParent((context, event) => {
 
-                console.log("selected!!!",event)
-                // @ts-ignore
 
-                return ({ type: 'SELECT',name:event.name})
+                return ({type: 'SELECT', name: event.pokemonName})
             })
         }
 
@@ -126,22 +126,23 @@ export const pokemonSaverSideBarMachine = createMachine({
 });
 
 
-export const createPokemonMachine = (pokemon: string,pokemonSaverSideBar:any) => {
+export const createPokemonMachine = (pokemon: string, pokemonSaverSideBar: any) => {
 
 
 
-    // @ts-ignore
-    return createMachine({
+    type pokemonCardActorMachineContextType = {pokemon:string, pokemonData?: Pokemon,pokemonSaverSideBar:any };
+    type pokemonCardActorMachineEventType = { type: 'REFRESH' }|{ type: 'SAVE' ;pokemonName:string }|{type:'RETRY'};
+
+    return createMachine<pokemonCardActorMachineContextType,pokemonCardActorMachineEventType>({
         id: "pokemon",
         initial: "loading",
         context: {
             pokemon,
-            data: null,
-            pokemonSaverSideBar:pokemonSaverSideBar
+            pokemonData: undefined,
+            pokemonSaverSideBar: pokemonSaverSideBar
         },
         states: {
             loading: {
-                // @ts-ignore
                 invoke: {
                     id: 'fetch-pokemon',
                     src: invokeFetchPokemon,
@@ -149,8 +150,7 @@ export const createPokemonMachine = (pokemon: string,pokemonSaverSideBar:any) =>
                         target: 'loaded',
                         actions: [
                             assign({
-                                // @ts-ignore
-                                data: (_, event) => event.data,
+                                pokemonData: (_, event) => event.data,
                             }),
 
                         ],
@@ -169,12 +169,11 @@ export const createPokemonMachine = (pokemon: string,pokemonSaverSideBar:any) =>
             },
         },
         on: {
-            SAVE:{
-                target:'loaded',
-                actions: // @ts-ignore
+            SAVE: {
+                target: 'loaded',
+                actions:
 
                     send((context, event) => ({...context, type: 'SAVE'}), {
-                        // @ts-ignore
                         to: (context) => context.pokemonSaverSideBar
                     })
 
