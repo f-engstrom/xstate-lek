@@ -1,4 +1,3 @@
-import unknown from '../../../public/outline.png'
 import {PokemonCard} from "../pokemonCard/pokemonCard";
 import {Ability} from "../../models/pokemon";
 
