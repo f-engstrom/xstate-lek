@@ -1,26 +1,26 @@
 import {useActor} from "@xstate/react";
+import {ActorRefFrom} from "xstate";
+import {pokemonSaverSideBarMachine} from "../../state/state";
 
 
-export const PokemonSaverSideBar = ({actor}: { actor: any }) => {
+export const PokemonSaverSideBar = ({actor}: { actor: ActorRefFrom<typeof pokemonSaverSideBarMachine > }) => {
 
     const [current, send] = useActor(actor);
 
 
     let pokemonList = <ul>{
 
-        // @ts-ignore
         current.context.pokemons.map((pokemon:string) => {
 
 
         return (
 
-            <li onClick={() => send({ type: 'SELECT',name:pokemon})}>{pokemon}
+            <li onClick={() => send({ type: 'SELECT',pokemonName:pokemon})}>{pokemon}
             </li>
         )
 
 
     })}</ul>
-    // @ts-ignore
 
     console.log("sidebarcurrent", current.context);
 
