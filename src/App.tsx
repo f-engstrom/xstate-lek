@@ -17,7 +17,7 @@ function App() {
     console.log("state", current.context);
 
     return (
-        <div className="container flex justify-center mx-auto bg-yellow-300  ">
+        <div className="flex justify-center items-center w-screen h-screen bg-gray-800 ">
             <div className="grid grid-flow-row auto-rows-max border-8 border-red-600">
                 <div className="mx-auto border-2 border-blue-400">
 

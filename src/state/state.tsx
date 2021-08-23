@@ -91,6 +91,7 @@ export const pokemonSaverSideBarMachine = createMachine<pokemonSaverSideBarMachi
             actions: assign((context, event) => {
 
 
+                console.log("save",event.pokemonName);
                 let pokemons = [...context.pokemons];
 
                 let pokemon = pokemons.indexOf(event.pokemonName);
@@ -126,12 +127,14 @@ export const pokemonSaverSideBarMachine = createMachine<pokemonSaverSideBarMachi
 });
 
 
+type pokemonCardActorMachineContextType = {pokemon:string, pokemonData?: any,pokemonSaverSideBar:any };
+type pokemonCardActorMachineEventType = { type: 'REFRESH' }|{ type: 'SAVE' ;pokemonName:string }|{type:'RETRY'};
+
 export const createPokemonMachine = (pokemon: string, pokemonSaverSideBar: any) => {
 
 
 
-    type pokemonCardActorMachineContextType = {pokemon:string, pokemonData?: any,pokemonSaverSideBar:any };
-    type pokemonCardActorMachineEventType = { type: 'REFRESH' }|{ type: 'SAVE' ;pokemonName:string }|{type:'RETRY'};
+
 
     return createMachine<pokemonCardActorMachineContextType,pokemonCardActorMachineEventType>({
         id: "pokemon",
@@ -178,7 +181,7 @@ export const createPokemonMachine = (pokemon: string, pokemonSaverSideBar: any) 
                 target: 'loaded',
                 actions:
 
-                    send((context, event) => ({...context, type: 'SAVE'}), {
+                    send((context, event) => ({pokemonName:event.pokemonName, type: 'SAVE'}), {
                         to: (context) => context.pokemonSaverSideBar
                     })
 
@@ -187,7 +190,7 @@ export const createPokemonMachine = (pokemon: string, pokemonSaverSideBar: any) 
     });
 };
 
-function invokeFetchPokemon(context: any) {
+function invokeFetchPokemon(context: pokemonCardActorMachineContextType) {
 
     console.log("fetch", context);
     const {pokemon} = context;

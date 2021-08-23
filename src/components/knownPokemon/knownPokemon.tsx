@@ -26,7 +26,7 @@ export const KnownPokemon = ({actor}: { actor:     ActorRefFrom<ReturnType<typeo
             <PokemonCard name={name} abilities={abilities} image={image}/>
             <div>
                 <button
-                    className="w-1/2 flex items-center justify-center bg-lime-300 text-black border border-black shadow-offset-black"
+                    className="bg-red-600 py-3 px-5 text-white font-semibold rounded-lg hover:shadow-lg transition duration-3000 cursor-pointer"
                     onClick={
                         () => {
                             send({type: 'SAVE',pokemonName:name})
